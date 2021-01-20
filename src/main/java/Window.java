@@ -22,10 +22,10 @@ public class Window {
 
     private float[] vertices = {
             // x, y,        r, g, b              ux, uy
-            0.5f, 0.5f,     1.0f, 0.2f, 0.11f,   1.0f, 0.0f,
-            0.5f, -0.5f,    1.0f, 0.2f, 0.11f,   1.0f, 1.0f,
-            -0.5f, -0.5f,   1.0f, 0.2f, 0.11f,   0.0f, 1.0f,
-            -0.5f, 0.5f,    1.0f, 0.2f, 0.11f,   0.0f, 0.0f
+            0.5f, 0.5f,     1.0f, 0.2f, 0.11f,    1.0f, 0.0f,
+            0.5f, -0.5f,    1.0f, 0.2f, 0.11f,    1.0f, 1.0f,
+            -0.5f, -0.5f,   1.0f, 0.2f, 0.11f,    0.0f, 1.0f,
+            -0.5f, 0.5f,    1.0f, 0.2f, 0.11f,    0.0f, 0.0f
     };
 
     private int[] indices = {
@@ -92,6 +92,8 @@ public class Window {
         uploadSquare();
 
         Shader fontShader = new Shader("assets/fontShader.glsl");
+        uploadSquare();
+
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT);
             glClearColor(1, 1, 1, 1);
