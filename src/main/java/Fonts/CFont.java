@@ -1,12 +1,17 @@
 package Fonts;
 
+import org.lwjgl.BufferUtils;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public class CFont {
     private String filepath;
@@ -15,11 +20,17 @@ public class CFont {
     private int width, height, lineHeight;
     private Map<Integer, CharInfo> characterMap;
 
+    public int textureId;
+
     public CFont(String filepath, int fontSize) {
         this.filepath = filepath;
         this.fontSize = fontSize;
         this.characterMap = new HashMap<>();
         generateBitmap();
+    }
+
+    public CharInfo getCharacter(int codepoint) {
+        return characterMap.getOrDefault(codepoint, new CharInfo(0, 0, 0, 0));
     }
 
     public void generateBitmap() {
@@ -71,11 +82,37 @@ public class CFont {
         }
         g2d.dispose();
 
-        try {
-            File file = new File("tmp.png");
-            ImageIO.write(img, "png", file);
-        } catch (IOException e) {
-            e.printStackTrace();
+        uploadTexture(img);
+    }
+
+    private void uploadTexture(BufferedImage image) {
+        // Taken from https://stackoverflow.com/questions/10801016/lwjgl-textures-and-strings
+
+        int[] pixels = new int[image.getHeight() * image.getWidth()];
+        image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+
+        ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth() * image.getHeight() * 4);
+        for (int y=0; y < image.getHeight(); y++) {
+            for (int x=0; x < image.getWidth(); x++) {
+                int pixel = pixels[y * image.getWidth() + x];
+                byte alphaComponent = (byte)((pixel >> 24) & 0xFF);
+                buffer.put(alphaComponent);
+                buffer.put(alphaComponent);
+                buffer.put(alphaComponent);
+                buffer.put(alphaComponent);
+            }
         }
+        buffer.flip();
+
+        textureId = glGenTextures();
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.getWidth(), image.getHeight(),
+                0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+        buffer.clear();
     }
 }
