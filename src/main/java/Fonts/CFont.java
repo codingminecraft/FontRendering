@@ -1,10 +1,7 @@
 package Fonts;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +17,10 @@ public class CFont {
         this.fontSize = fontSize;
         this.characterMap = new HashMap<>();
         generateBitmap();
+    }
+
+    public CharInfo getCharacter(int codepoint) {
+        return characterMap.getOrDefault(codepoint, new CharInfo(0, 0, 0, 0));
     }
 
     public void generateBitmap() {
@@ -71,11 +72,6 @@ public class CFont {
         }
         g2d.dispose();
 
-        try {
-            File file = new File("tmp.png");
-            ImageIO.write(img, "png", file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Write image to file
     }
 }
