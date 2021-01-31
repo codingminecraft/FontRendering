@@ -48,6 +48,9 @@ public class Window {
     }
 
     public void run() {
+        Sdf.generateCodepointBitmap(
+                'A', "C:/Windows/Fonts/arial.ttf", 32);
+
         Shader fontShader = new Shader("assets/fontShader.glsl");
         Batch batch = new Batch();
         batch.shader = fontShader;

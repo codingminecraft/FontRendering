@@ -15,6 +15,9 @@ project.ext.jomlVersion = "1.10.0"
 project.ext.lwjglNatives = "natives-windows"
 
 dependencies {
+    // FreeType JAR
+    implementation fileTree('libs') { include '*.jar' }
+
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
     implementation "org.lwjgl:lwjgl"
