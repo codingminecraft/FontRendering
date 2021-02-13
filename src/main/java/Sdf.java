@@ -1,6 +1,7 @@
 import com.mlomb.freetypejni.Face;
 import com.mlomb.freetypejni.FreeType;
 import com.mlomb.freetypejni.Library;
+import org.lwjgl.BufferUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -10,8 +11,12 @@ import java.nio.ByteBuffer;
 
 import static com.mlomb.freetypejni.FreeType.*;
 import static com.mlomb.freetypejni.FreeTypeConstants.FT_LOAD_RENDER;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 
 public class Sdf {
+    public static int textureId = -1;
+
     private static float mapRange(float val, float in_min, float in_max,
                                   float out_min, float out_max) {
         return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -55,7 +60,7 @@ public class Sdf {
 
     public static void generateCodepointBitmap(int codepoint, String fontFile, int fontSize) {
         int padding = 15;
-        int upscaleResolution = 1024;
+        int upscaleResolution = 1080;
         int spread = upscaleResolution / 2;
 
         Library library = FreeType.newLibrary();
@@ -122,11 +127,43 @@ public class Sdf {
             e.printStackTrace();
         }
 
+        uploadTexture(testImage);
         free(library, font);
     }
 
     private static void free(Library library, Face font) {
         FT_Done_Face(font.getPointer());
         FT_Done_FreeType(library.getPointer());
+    }
+
+    private static void uploadTexture(BufferedImage image) {
+        // Taken from https://stackoverflow.com/questions/10801016/lwjgl-textures-and-strings
+
+        int[] pixels = new int[image.getHeight() * image.getWidth()];
+        image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+
+        ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth() * image.getHeight() * 4);
+        for (int y=0; y < image.getHeight(); y++) {
+            for (int x=0; x < image.getWidth(); x++) {
+                int pixel = pixels[y * image.getWidth() + x];
+                byte r = (byte)((pixel >> 16) & 0xFF);
+                buffer.put(r);
+                buffer.put(r);
+                buffer.put(r);
+                buffer.put(r);
+            }
+        }
+        buffer.flip();
+
+        textureId = glGenTextures();
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.getWidth(), image.getHeight(),
+                0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+        buffer.clear();
     }
 }
