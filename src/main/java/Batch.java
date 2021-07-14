@@ -84,11 +84,11 @@ public class Batch {
         glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
 
         // Draw the buffer that we just uploaded
-        //shader.use();
-        sdfShader.use();
+        shader.use();
+        //sdfShader.use();
         glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_BUFFER, font.textureId);
-        glBindTexture(GL_TEXTURE_BUFFER, Sdf.textureId);
+        glBindTexture(GL_TEXTURE_BUFFER, font.textureId);
+        //glBindTexture(GL_TEXTURE_BUFFER, Sdf.textureId);
         sdfShader.uploadTexture("uFontTexture", 0);
         sdfShader.uploadMat4f("uProjection", projection);
 

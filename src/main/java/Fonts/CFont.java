@@ -2,8 +2,10 @@ package Fonts;
 
 import org.lwjgl.BufferUtils;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,8 +32,21 @@ public class CFont {
         return characterMap.getOrDefault(codepoint, new CharInfo(0, 0, 0, 0));
     }
 
+    private Font registerFont(String fontFile) {
+        try {
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            Font font = Font.createFont(Font.TRUETYPE_FONT, new File(filepath));
+            ge.registerFont(font);
+            return font;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void generateBitmap() {
-        Font font = new Font(filepath, Font.PLAIN, fontSize);
+        Font font = registerFont(filepath);
+        font = new Font(font.getName(), Font.PLAIN, fontSize);
 
         // Create fake image to get font information
         BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
@@ -77,6 +92,12 @@ public class CFont {
                 g2d.drawString("" + (char)i, info.sourceX, info.sourceY);
             }
         }
+//        File outputfile = new File("image.png");
+//        try {
+//            ImageIO.write(img, "png", outputfile);
+//        } catch (Exception e) {
+//
+//        }
         g2d.dispose();
 
         uploadTexture(img);

@@ -24,7 +24,7 @@ public class Window {
 
     public Window() {
         init();
-        font = new CFont("C:/Windows/Fonts/Arial.ttf", 64);
+        font = new CFont("C:/Windows/Fonts/ALGER.ttf", 64);
     }
 
     private void init() {
@@ -49,8 +49,8 @@ public class Window {
     }
 
     public void run() {
-        Sdf.generateCodepointBitmap(
-                'G', "C:/Windows/Fonts/arial.ttf", 64);
+//        Sdf.generateCodepointBitmap(
+//                'G', "C:/Windows/Fonts/arial.ttf", 64);
 
         Shader fontShader = new Shader("assets/fontShader.glsl");
         Shader sdfShader = new Shader("assets/sdfShader.glsl");
@@ -71,15 +71,15 @@ public class Window {
             glClear(GL_COLOR_BUFFER_BIT);
             glClearColor(0.1f, 0.09f, 0.1f, 1);
 
-//            batch.addText("Hello world!", 200, 200, 1f, 0xFF00AB0);
-//            batch.addText("My name is Gabe!", 100, 300, 1.1f, 0xAA01BB);
-//
-//            String message = "";
-//            for (int i=0; i < 10; i++) {
-//                message += (char)(random.nextInt('z' - 'a') + 'a');
-//            }
-//            batch.addText(message, 200, 400, 1.1f, 0xAA01BB);
-            batch.addCharacter(0, 0, 620.0f, oneQuad, 0xFF4500);
+            batch.addText("Hello world!", 200, 200, 1f, 0xFF00AB0);
+            batch.addText("My name is Gabe!", 100, 300, 1.1f, 0xAA01BB);
+
+            String message = "";
+            for (int i=0; i < 10; i++) {
+                message += (char)(random.nextInt('z' - 'a') + 'a');
+            }
+            batch.addText(message, 200, 400, 1.1f, 0xAA01BB);
+            //batch.addCharacter(0, 0, 620.0f, oneQuad, 0xFF4500);
             batch.flushBatch();
 
             glfwSwapBuffers(window);
